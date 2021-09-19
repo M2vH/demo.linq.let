@@ -1,0 +1,10 @@
+#!csharp
+
+using System.Collections.Generic;
+public var collection = new List<string>{"one","two"};
+
+var demo = from item in collection
+let x = new{index = collection.IndexOf(item),item = item}
+select x;
+display( demo);
+display (collection)
