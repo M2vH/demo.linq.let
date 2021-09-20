@@ -1,10 +1,92 @@
 #!csharp
 
-using System.Collections.Generic;
-public var collection = new List<string>{"one","two"};
+var collectionWithDup = new List<string>{"one","two","two","three"};
 
-var demo = from item in collection
-let x = new{index = collection.IndexOf(item),item = item}
-select x;
+#!csharp
+
+var demo = 
+    from item in collectionWithDup
+    let x = new{_index = collectionWithDup.IndexOf(item),_item = item}
+    select x;
 display( demo);
-display (collection)
+
+#!csharp
+
+var all = 
+    from item in collectionWithDup
+    select new {_value = item};
+var allAsArray = all.ToArray();
+var indexList =
+    from item in all
+    select new {index = Array.IndexOf(allAsArray,item), value = item._value};
+
+display(all);
+display(indexList);
+
+#!markdown
+
+## Capsule the element in an object
+
+#!csharp
+
+class Element{
+    public string Value{get;set;}
+    public Element(string _name){
+        Value = _name;
+    }
+}
+
+#!csharp
+
+var demo = from item in collectionWithDup
+    select new Element(item);
+display(demo)
+
+#!markdown
+
+## Create the index on the fly
+
+#!csharp
+
+var collectionWithDup = new List<string>{"one","two","two","three"};
+int start = 0;
+var demoIndexOnTheFly = 
+    from item in collectionWithDup
+    select new{_index = start++,_value = item};
+display (demoIndexOnTheFly)
+
+#!markdown
+
+## Create `AllIndicesOf(string element)` Extension for `List<string>`
+
+#!csharp
+
+public static IEnumerable<int> AllIndicesOf(this List<string> list, string element) {
+    List<int> result = new();
+    int start = 0;
+    while(start != -1 && start<=list.Count-1){
+        start = list.IndexOf(element,start);
+        //start = found;
+        if(start != -1){
+            result.Add(start);
+        }else{
+            break;
+        }
+        start++;
+    }
+    return result;
+}
+
+#!csharp
+
+var test = collectionWithDup.AllIndicesOf("two");
+display(test)
+
+#!markdown
+
+## Value of 'IndexOf' if not found
+
+#!csharp
+
+var testIndexOfNotInList = collectionWithDup.IndexOf("four");
+display(testIndexOfNotInList)
